@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- <include file="/home/jetbot/workspace/catkin_ws/src/jetbot_ros/launch/autorun.launch"/> -->
+
+    <!-- launch rosbridge server -->
+    <node name="rosbridge_server" pkg="rosbridge_server" type="rosbridge_websocket" output="screen" args=""/>
+
+    <node name="motor" pkg="middleware" type="motor" output="screen" respawn="true" />
+    <node name="keyboard_input" pkg="middleware" type="keyboard_input" output="screen" respawn="true" />
+    <!-- <node name="pose_estimator" pkg="middleware" type="pose_estimator" output="screen" respawn="true" /> -->
+    <node name="high_level_control" pkg="middleware" type="high_level_control" output="screen" respawn="true" />
+    <node name="gyro" pkg="middleware" type="gyro" output="screen" respawn="true" />
+
+    <node name="qr" pkg="detection" type="qr" output="screen" respawn="true" />
+    <node name="icp" pkg="detection" type="icp" output="log" respawn="true" />
+</launch>

@@ -31,6 +31,9 @@ float accel_offset_buffer = 0;
 float accel_array[1000];
 float accel_standart_deviation = 0;
 
+float gyro_offset = 0.0f;
+float gyro_offset_buffer = 0.0f;
+
 int file = -1;
 
 void i2c_write(__u8 reg_address, __u8 val)
@@ -151,7 +154,7 @@ int main(int argc, char *argv[])
     char bus_filename[250];
     uint16_t fifo_len = 0;
 
-    snprintf(bus_filename, 250, "/dev/i2c-0");
+    snprintf(bus_filename, 250, "/dev/i2c-0"); // Sesuaikan ini dengan I2C bus yang digunakan
     file = open(bus_filename, O_RDWR);
     if (file < 0)
     {
@@ -215,6 +218,23 @@ int main(int argc, char *argv[])
 
     printf("Standart deviation: %lf\n", accel_standart_deviation);
 
+    for (uint16_t i = 0; i < 1000; i++)
+    {
+        gyro_z_h = i2c_read(REG_GYRO_ZOUT_H);
+        gyro_z_l = i2c_read(REG_GYRO_ZOUT_L);
+
+        z_gyro = two_complement_to_int(gyro_z_h, gyro_z_l);
+        z_gyro_deg_per_sec = ((float)z_gyro) / 32.8;
+
+        gyro_offset_buffer += z_gyro_deg_per_sec;
+
+        usleep(1000);
+    }
+
+    gyro_offset = gyro_offset_buffer / 1000.0f;
+
+    printf("Gyro offset: %f\n", gyro_offset);
+
     while (ros::ok())
     {
         static float gyro_vel[2] = {0, 0};
@@ -272,7 +292,7 @@ int main(int argc, char *argv[])
         // z_gyro_deg_per_sec += 2.8123f; // Adjust the offset as needed
         // z_gyro_deg_per_sec += 5.2823f; // Adjust the offset as needed
         // z_gyro_deg_per_sec += 2.5823f; // Adjust the offset as needed
-        z_gyro_deg_per_sec += 3.1523f; // Adjust the offset as needed
+        z_gyro_deg_per_sec -= gyro_offset; // Adjust the offset as needed
 
         static double yaw_pos = 0.0f;
 

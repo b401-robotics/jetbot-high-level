@@ -128,31 +128,194 @@ ros::Subscriber sub_keyboard;
 ros::Subscriber sub_feedback_motor;
 ros::Subscriber sub_d_icp;
 
+/**
+ * @brief Ini adalah callback yang akan selalu dijalankan setiap 50 Hz
+ */
 void callback_routine();
+
+/**
+ * DEPRECATED !!!
+ * @brief Ini adalah callback untuk Menerima Pose dari Pose estimator
+ */
 void callback_sub_final_pose(const geometry_msgs::Pose2DConstPtr &msg);
+
+/**
+ * @brief Ini adalah callback untuk menerima data dari QR Detector
+ *
+ * Bit selection, bit 0 untuk robot 1, bit 1 untuk robot 2, dan bit 2 untuk robot 3.
+ *
+ * @example 0b100 manandakan deteksi robot 3
+ */
 void callback_sub_detected_robot(const std_msgs::UInt8ConstPtr &msg);
+
+/**
+ * @brief Ini adalah callback untuk menerima
+ * 0 -> robot 1
+ * 1 -> robot 2
+ * 2 -> robot 3
+ * 3 -> robot game state (start / stop)
+ * 4 5 -> Tempat sembunyi 1
+ * 6 7 -> Tempat sembunyi 2
+ */
 void callback_sub_basestation(const std_msgs::UInt8ConstPtr &msg);
+
+/**
+ * @brief Ini adalah callback untuk menerima data dari IMU berupa gyro yaw
+ */
 void callback_sub_yaw_position(const std_msgs::Float64ConstPtr &msg);
+
+/**
+ * @brief Ini adalah callback untuk menerima data dari keyboard
+ */
 void callback_sub_keyboard(const std_msgs::Int8ConstPtr &msg);
+
+/**
+ * DEPRECATED !!!
+ * @brief Ini adalah callback untuk menerima data dari motor
+ */
 void callback_sub_feedback_motor(const std_msgs::Int16MultiArrayConstPtr &msg);
+
+/**
+ * @brief Ini adalah callback untuk menerima data dari ICP
+ *
+ * Data yang diterima adalah delta ICP estimasi terhadap pose robot
+ */
 void callback_sub_d_icp(const geometry_msgs::Pose2DConstPtr &msg);
 
+/**
+ * @brief Ini adalah fungsi sub algoritma untuk mencari lawan
+ *
+ * Disini menunakan hardcode untuk mencari lawan
+ */
 void jalan_bebas_dan_temukan();
+
+/**
+ * @brief Ini adalah fungsi sub algoritma untuk mencari tempat bersembunyi
+ *
+ * Tempat bersembunyi ditentukan oleh basestation
+ */
 void cari_tempat_bersembunyi();
+
+/**
+ * @brief Ini adalah fungsi sub algoritma untuk mencari tempat bersembunyi
+ *
+ * @param x adalah velocity x  (harus 0)
+ * @param y adalah velocity y  (kecepatan maju robot)
+ * @param yaw adalah velocity yaw (kecepatan rotasi robot)
+ */
 void set_velocity(float x, float y, float yaw);
+
+/**
+ * DEPRECATED !!!
+ * @brief Ini adalha fungsi untuk merubah kecepatan robot berbasis global menjadi berbasis local
+ *
+ * @param x adalah kecepatan x global
+ * @param y adalah kecepatan y global
+ * @param yaw adalah yaw global
+ */
 void global_2_local_velocity(float x, float y, float yaw);
+
+/**
+ * DEPRECATED !!!
+ * @brief Ini adalah fungsi untuk menggerakkan robot maju lurus
+ *
+ * @param vy adalah kecepatan maju robot
+ * @param target_yaw adalah yaw yang diinginkan
+ */
 void gerak_maju_lurus(float vy, float target_yaw);
+
+/**
+ * @brief Ini adalah fungsi untuk menghadapkan robot ke arah yaw yang diinginkan
+ *
+ * Fungsi ini menerapkan satu sistem kontrol PID dengan kecepatan rotasi sebagai output dan gyro yaw sebagai feedback
+ *
+ * @param yaw adalah yaw yang diinginkan
+ * @return 1 jika sudah menghadap, 0 jika belum
+ */
 int8_t hadap_yaw(float yaw);
+
+/**
+ * DEPRECATED !!!
+ * @brief Ini adalah fungsi untuk menghadapkan robot ke arah yaw yang diinginkan
+ *
+ * Fungsi ini open loop sistem kontrol dengan kecepatan rotasi sebagai output
+ *
+ * @param yaw adalah yaw yang diinginkan
+ * @return 1 jika sudah menghadap, 0 jika belum
+ */
 int8_t hadap_yaw_berdasarkan_waktu(float yaw);
+
+/**
+ * @brief Fungsi ini digunakan untuk menggerakkan robot menuju satu titik tertentu
+ *
+ * Fungsi ini menerapkan dua sistem kontrol PID, yaitu translasi dan rotasi
+ *
+ * @param x adalah posisi x tujuan
+ * @param y adalah posisi y tujuan
+ * @param yaw adalah yaw tujuan (Ini sebenarnya tidak digunakan karena default nya arah robot adalah arah menuju titik)
+ * @return 1 jika sudah mencapai titik, 0 jika belum
+ */
 int8_t motion_to_point(float x, float y, float yaw);
+
+/**
+ * DEPRECATED !!!
+ * @brief Fungsi ini digunakan untuk menggerakkan robot menuju satu titik tertentu
+ *
+ * Fungsi ini menerapkan dua sistem kontrol PID, yaitu translasi dan rotasi
+ *
+ * @param x adalah posisi x tujuan
+ * @param y adalah posisi y tujuan
+ * @param yaw adalah yaw tujuan (Ini sebenarnya tidak digunakan karena default nya arah robot adalah arah menuju titik)
+ * @return 1 jika sudah mencapai titik, 0 jika belum
+ */
 int8_t motion_to_point_2(float x, float y, float yaw);
+
+/**
+ * @brief Fungsi ini digunakan untuk mengolah odometry robot dengan menggunakan kecepatan output dari set_velocity() dan
+ * gyro yaw sebagai IMU
+ */
 void odometry();
+
+/**
+ * @brief Fungsi ini digunakan untuk mengecek apakah semua robot sudah ditemukan
+ *
+ * Data disimpan langsung pada bs_data_to_send
+ *
+ * @return 1 jika semua robot sudah ditemukan, 0 jika belum
+ */
 uint8_t check_all_robot_is_found();
+
+/**
+ * @brief Fungsi ini digunakan untuk menginisisasi zona lapangan
+ */
 void init_zona_lapangan();
+
+/**
+ * @brief Fungsi ini digunakan untuk membuat zona lapangan
+ */
 void set_zona_lapangan(int index, float x1, float y1, float x2, float y2);
+
+/**
+ * @brief Fungsi ini digunakan untuk mengecek robot berada di zona mana
+ *
+ * @return zona yang dideteksi
+ */
 uint8_t check_robot_on_zone();
+
+/**
+ * @brief Fungsi ini digunakan untuk mendapatkan centroid dari zona,
+ *
+ * Ada beberapa hardocde untuk zona tertentu
+ *
+ * @return centroid dari zona
+ */
 point_t get_centroid_of_zone(uint8_t zone);
 
+/**
+ * @brief Fungsi ini digunakan untuk mengolah FSM dari game
+ *
+ * FSM adalah Finite State Machine
+ */
 void game();
 
 int main(int argc, char **argv)
@@ -165,7 +328,7 @@ int main(int argc, char **argv)
     pub_basestation = n.advertise<std_msgs::UInt8>("/basestation_tx", 1);
     pub_odometry = n.advertise<geometry_msgs::Pose2D>("/odometry", 1);
 
-    sub_final_pose = n.subscribe("/final_pose", 1, callback_sub_final_pose);
+    // sub_final_pose = n.subscribe("/final_pose", 1, callback_sub_final_pose);
     sub_detected_robot = n.subscribe("/detected_robot", 1, callback_sub_detected_robot);
     sub_basestation = n.subscribe("/basestation_rx", 1, callback_sub_basestation);
     sub_yaw_position = n.subscribe("/yaw_position", 1, callback_sub_yaw_position);
@@ -173,7 +336,7 @@ int main(int argc, char **argv)
     sub_feedback_motor = n.subscribe("/jetbot_motors/feedback", 1, callback_sub_feedback_motor);
     sub_d_icp = n.subscribe("/icp/d", 1, callback_sub_d_icp);
 
-    const char *robot_num_str = std::getenv("ROBOT_NUM");
+    const char *robot_num_str = std::getenv("ROBOT_NUM"); // Get robot number from environment variable ROBOT_NUM
 
     int robot_num = std::atoi(robot_num_str);
 

@@ -172,8 +172,8 @@ int main(int argc, char *argv[])
     i2c_write(REG_PWR_MGMT_1, 0x01);
     i2c_write(REG_SMPRT_DIV, 0x00);
     i2c_write(REG_CONFIG, 0x00);
-    i2c_write(REG_ACCEL_CONFIG, 0x10);
-    i2c_write(REG_GYRO_CONFIG, 0x10);
+    i2c_write(REG_ACCEL_CONFIG, 0x10); // Setting accelerometer full-scale to +/- 8g
+    i2c_write(REG_GYRO_CONFIG, 0x10);  // Setting gyro full-scale to +/- 1000 deg/sec
     // i2c_write(REG_FIFO_EN, 0x88);
     // i2c_write(REG_USER_CTRL, 0x44);
 

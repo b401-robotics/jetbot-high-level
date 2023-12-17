@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     sub_cmd_vel = n.subscribe("/cmd_vel", 1, callback_sub_cmd_vel);
 
-    const char *env_reverse_speed = std::getenv("REVERSE_SPEED");
+    const char *env_reverse_speed = std::getenv("REVERSE_SPEED"); // Ini digunakan untuk menyesuaikan arah motor
     if (env_reverse_speed != NULL)
     {
         reverse_speed = atoi(env_reverse_speed);
@@ -66,11 +66,12 @@ int main(int argc, char **argv)
 
 void callback_motor_routine()
 {
-    is_keyboard_interrupt = (ros::Time::now().toSec() - last_time_keyboard_interrupt < 0.1);
+    is_keyboard_interrupt = (ros::Time::now().toSec() - last_time_keyboard_interrupt < 0.1); // DEPRECATED
 
-    if (is_keyboard_interrupt)
+    if (is_keyboard_interrupt) // DEPRECATED
         return;
 
+    // Inverse Kinematics
     if (reverse_speed)
     {
         motor_speed[0] = (int16_t)(cmd_vel[1]) + cmd_vel[2] * DISTANCE_WHEEL_TO_WHEEL * 0.5;

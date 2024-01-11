@@ -29,3 +29,6 @@ chmod +x run.sh # Jika run.sh tidak bisa dijalankan "permission denied"
 ```
 
 Untuk dokumentasi lebih lanjut ada di [dokumentasi](doc/README.md)
+
+## Demonstrasi Video
+[![Watch the video]](https://drive.google.com/file/d/1ieZr84CJkuApwBAylvSIfFp5AeSWpBLe/view?usp=drivesdk)
